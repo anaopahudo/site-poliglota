@@ -1,0 +1,13 @@
+{
+  "name": "mini-polyglot-backend",
+  "version": "1.0.0",
+  "description": "Node.js API Gateway e Servidor Web para o Mini Polyglot NLP Lab",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["nodejs", "python", "microservices", "fullstack"],
+  "author": "Antigravity",
+  "license": "MIT"
+}

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polyglot NLP Lab | Node.js + Python Architecture</title>
+  <meta name="description" content="Mini projeto full stack demonstrando arquitetura poliglota com Node.js API Gateway e Python Data Engine.">
+  
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-gradient-overlay"></div>
+
+  <header class="app-header">
+    <div class="container header-content">
+      <div class="brand">
+        <div class="brand-icon">
+          <span class="icon-node">⚡</span>
+          <span class="icon-plus">+</span>
+          <span class="icon-python">🐍</span>
+        </div>
+        <div>
+          <h1 class="brand-title">Polyglot Analytics Lab</h1>
+          <p class="brand-subtitle">Node.js API Gateway &bull; Python Data Engine &bull; Vanilla Frontend</p>
+        </div>
+      </div>
+
+      <div class="system-status">
+        <div class="status-badge" id="nodeStatusBadge">
+          <span class="status-dot pulsing"></span>
+          <span class="status-name">Node.js:3000</span>
+          <span class="status-state" id="nodeStatusText">Verificando...</span>
+        </div>
+        <div class="status-badge" id="pythonStatusBadge">
+          <span class="status-dot pulsing"></span>
+          <span class="status-name">Python:5001</span>
+          <span class="status-state" id="pythonStatusText">Verificando...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-layout">
+    <!-- Banner de Arquitetura -->
+    <section class="architecture-banner" id="architectureBanner">
+      <div class="arch-step">
+        <div class="arch-badge browser">🌐 Frontend</div>
+        <span class="arch-label">HTML5 / CSS / JS</span>
+      </div>
+      <div class="arch-arrow">➔ <span>HTTP POST</span> ➔</div>
+      <div class="arch-step">
+        <div class="arch-badge node">⚡ Gateway Node.js</div>
+        <span class="arch-label">Porta 3000 (Proxy & BFF)</span>
+      </div>
+      <div class="arch-arrow">➔ <span>JSON IPC</span> ➔</div>
+      <div class="arch-step">
+        <div class="arch-badge python">🐍 Motor Python</div>
+        <span class="arch-label">Porta 5001 (NLP & Stats)</span>
+      </div>
+    </section>
+
+    <div class="dashboard-grid">
+      <!-- Coluna da Esquerda: Entrada de Dados -->
+      <section class="card input-card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon">📝</span> Entrada de Texto
+          </h2>
+          <span class="char-word-live" id="liveCounters">0 caracteres | 0 palavras</span>
+        </div>
+
+        <div class="sample-pills">
+          <span class="sample-label">Exemplos rápidos:</span>
+          <button type="button" class="btn-pill" id="samplePosBtn">✨ Feedback Positivo</button>
+          <button type="button" class="btn-pill" id="sampleNegBtn">⚠️ Relato Crítico</button>
+          <button type="button" class="btn-pill" id="sampleTechBtn">🚀 Engenharia Tech</button>
+        </div>
+
+        <div class="textarea-wrapper">
+          <textarea 
+            id="textInput" 
+            placeholder="Digite ou cole qualquer texto aqui para analisar (suporta Português e Inglês)... [Dica: Ctrl + Enter para analisar]"
+            rows="8"
+          ></textarea>
+        </div>
+
+        <div class="input-actions">
+          <button type="button" class="btn-secondary" id="clearBtn">
+            <span>🗑️</span> Limpar
+          </button>
+          <button type="button" class="btn-primary" id="analyzeBtn">
+            <span class="btn-text">Processar Pipeline</span>
+            <span class="btn-icon">⚡</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Coluna da Direita: Resultados e Métricas -->
+      <section class="card results-card" id="resultsSection">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-icon">📊</span> Métricas & Diagnóstico
+          </h2>
+          <div class="meta-tag" id="latencyTag">Pronto</div>
+        </div>
+
+        <!-- Estado Inicial Vazio -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">💡</div>
+          <h3>Aguardando análise</h3>
+          <p>Digite um texto à esquerda e clique em <strong>Processar Pipeline</strong> para ver o poder do cálculo distribuído Node.js + Python.</p>
+        </div>
+
+        <!-- Conteúdo dos Resultados (Dinâmico) -->
+        <div class="results-content hidden" id="resultsContent">
+          <!-- Grid de Métricas Principais -->
+          <div class="stats-grid">
+            <div class="stat-box">
+              <span class="stat-label">Total de Palavras</span>
+              <span class="stat-value" id="valWords">0</span>
+              <span class="stat-sub" id="valAvgLength">0.0 letras/palavra</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Caracteres</span>
+              <span class="stat-value" id="valChars">0</span>
+              <span class="stat-sub" id="valCharsNoSpace">0 s/ espaços</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Sentenças</span>
+              <span class="stat-value" id="valSentences">0</span>
+              <span class="stat-sub">Estrutura frasal</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Tempo Leitura</span>
+              <span class="stat-value" id="valReadingTime">0s</span>
+              <span class="stat-sub">Base: 200 ppm</span>
+            </div>
+            <div class="stat-box full-width-sm">
+              <span class="stat-label">Diversidade Lexical</span>
+              <div class="stat-value-group">
+                <span class="stat-value" id="valLexical">0%</span>
+                <span class="stat-badge" id="valLexicalBadge">Normal</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="lexicalProgress" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card de Sentimento -->
+          <div class="sentiment-box" id="sentimentCard">
+            <div class="sentiment-header">
+              <div>
+                <span class="stat-label">Classificação de Polaridade (Sentimento)</span>
+                <div class="sentiment-result">
+                  <span class="sentiment-emoji" id="sentEmoji">⚖️</span>
+                  <span class="sentiment-title" id="sentTitle">Neutro</span>
+                  <span class="sentiment-score-badge" id="sentScore">Score: 0.00</span>
+                </div>
+              </div>
+              <div class="confidence-pill" id="sentConfidence">Confiança: 80%</div>
+            </div>
+
+            <!-- Barra de Polaridade (-1 a +1) -->
+            <div class="polarity-track">
+              <span class="polarity-min">Negativo (-1.0)</span>
+              <div class="polarity-bar">
+                <div class="polarity-center-marker"></div>
+                <div class="polarity-indicator" id="polarityPointer" style="left: 50%"></div>
+              </div>
+              <span class="polarity-max">Positivo (+1.0)</span>
+            </div>
+
+            <div class="matched-words-container" id="matchedWordsContainer">
+              <!-- Inserido dinamicamente via JS -->
+            </div>
+          </div>
+
+          <!-- Palavras Chave -->
+          <div class="keywords-box">
+            <span class="stat-label">Palavras-Chave Frequentes (Filtro de Stopwords)</span>
+            <div class="keywords-cloud" id="keywordsCloud">
+              <!-- Inserido dinamicamente -->
+            </div>
+          </div>
+
+          <!-- Metadados de Engenharia do Pipeline -->
+          <div class="pipeline-meta-box">
+            <div class="pipeline-meta-title">
+              <span>⚙️ Rastreabilidade de Microsserviço</span>
+              <span class="req-id" id="reqIdBadge">REQ-000000</span>
+            </div>
+            <div class="pipeline-steps-list">
+              <div class="pipeline-step-item">
+                <span class="step-num">1</span>
+                <span>Browser fez requisição HTTP POST para <code>/api/analyze</code></span>
+              </div>
+              <div class="pipeline-step-item">
+                <span class="step-num">2</span>
+                <span>Node.js Gateway validou dados e despachou para o Python na porta 5001</span>
+              </div>
+              <div class="pipeline-step-item">
+                <span class="step-num">3</span>
+                <span>Python executou cálculos estatísticos e de PLN leve</span>
+              </div>
+              <div class="pipeline-step-item">
+                <span class="step-num">4</span>
+                <span>Node.js formatou resposta com latência total de <strong id="valTotalLatency">0ms</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Seção de Histórico de Execuções Recentes -->
+    <section class="card history-card">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span class="card-icon">🕒</span> Histórico em Memória (BFF Node.js)
+        </h2>
+        <span class="history-count" id="historyCount">0 requisições armazenadas</span>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">Nenhuma análise no histórico recente.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container footer-content">
+      <p>Mini Projeto de Engenharia de Software Full Stack &bull; Arquitetura Poliglota (Node.js + Python)</p>
+      <p class="footer-sub">Zero dependências externas pesadas &bull; Inicialização em microssegundos</p>
+    </div>
+  </footer>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
